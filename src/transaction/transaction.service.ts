@@ -25,30 +25,45 @@ export class TransactionService {
     }
 
     async create(createTransactionDto: CreateTransactionRequestDto): Promise<any> {
-        const transactionExists = await this.transactionRepository.findOneBy({transaction_id: createTransactionDto.transaction_id});
-        if(transactionExists){
-            return {
-                status: 202,
-                message: "The transaction with same ID is already being processed"
-            }
-        }
-        try {
-              const transaction = this.transactionRepository.create({...createTransactionDto, processed_at: null});
-        await this.transactionRepository.save(transaction);
-        await this.transactionQueue.add('process-transaction', transaction, {
-            jobId: transaction.transaction_id,
-            delay: 30000,
-            removeOnComplete: true,
-            removeOnFail: true
+        const transactionExists = await this.transactionRepository.findOneBy({
+            transaction_id: createTransactionDto.transaction_id,
         });
 
-        return {
-            status: 202,
-            message: "The transaction is being processed"
+        if (transactionExists) {
+            return {
+                status: 202,
+                message: transactionExists.status === 'PROCESSED'
+                    ? 'Transaction has already been processed'
+                    : 'Transaction is already being processed',
+                transaction_id: transactionExists.transaction_id,
+            };
         }
+
+        try {
+            const transaction = this.transactionRepository.create({
+                ...createTransactionDto,
+                processed_at: null,
+            });
+            await this.transactionRepository.save(transaction);
+            await this.transactionQueue.add('process-transaction', transaction, {
+                jobId: transaction.transaction_id,
+                delay: 30000,
+                removeOnComplete: true,
+                removeOnFail: true,
+            });
+
+            return {
+                status: 202,
+                message: 'The transaction is being processed',
+                transaction_id: transaction.transaction_id,
+            };
         } catch (error) {
             if (error.code === '23505') {
-                return { status: 202, message: 'Transaction already being processed' };
+                return {
+                    status: 202,
+                    message: 'Transaction is already being processed',
+                    transaction_id: createTransactionDto.transaction_id,
+                };
             }
             throw error;
         }

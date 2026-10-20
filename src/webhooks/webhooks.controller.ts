@@ -1,18 +1,30 @@
-import { Body, Controller, Post, Response } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateTransactionRequestDto } from '../transaction/dto/create-transaction.dto';
 import { TransactionService } from '../transaction/transaction.service';
 
-
+@ApiTags('Webhooks')
 @Controller('v1/webhooks')
 export class WebhooksController {
-    constructor(private readonly transactionService: TransactionService){}
-    @Post('/transactions')
-  async createTransaction(@Body() createTransactionDto:CreateTransactionRequestDto, @Response() res):Promise<void>{
-    const result = await this.transactionService.create(createTransactionDto);
+  constructor(private readonly transactionService: TransactionService) {}
 
-    return res.status(202).json({
-        status: 'created',
-        message: 'Transaction has been queued for processing'
-    })
+  @Post('/transactions')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({ summary: 'Ingest transaction webhook' })
+  @ApiResponse({
+    status: 202,
+    description: 'Webhook accepted for processing',
+    schema: {
+      example: {
+        status: 202,
+        message: 'The transaction is being processed',
+        transaction_id: 'txn_abc123def456',
+      },
+    },
+  })
+  async createTransaction(
+    @Body() createTransactionDto: CreateTransactionRequestDto,
+  ) {
+    return await this.transactionService.create(createTransactionDto);
   }
 }

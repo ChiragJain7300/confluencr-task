@@ -20,7 +20,7 @@ import { BullModule } from '@nestjs/bullmq';
         url: configService.getOrThrow<string>('DB_SUPABASE_CONN_STR'),
         autoLoadEntities: true,
         synchronize: true,
-        logging: true,
+        logging: false,
         ssl: { rejectUnauthorized: false },
       }),
     }),
