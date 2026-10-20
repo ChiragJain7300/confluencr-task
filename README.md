@@ -8,7 +8,7 @@ A reliable, asynchronous payment webhook ingestion engine built with **NestJS**,
 
 ## 🌐 Public Deployed API
 
-- **Base URL**: `https://confluencr-task-9wip.onrender.com/` *(Replace with your deployed Render/Railway URL)*
+- **Base URL**: `https://confluencr-task-9wip.onrender.com/`
 - **Swagger Documentation**: `https://confluencr-task-9wip.onrender.com/docs`
 - **Health Check**: `GET https://confluencr-task-9wip.onrender.com/`
 
