@@ -9,7 +9,7 @@ A reliable, asynchronous payment webhook ingestion engine built with **NestJS**,
 ## 🌐 Public Deployed API
 
 - **Base URL**: `https://confluencr-task-production.up.railway.app` *(Replace with your deployed Render/Railway URL)*
-- **Swagger Documentation**: `https://<YOUR_DEPLOYED_URL>/api/docs`
+- **Swagger Documentation**: `https://<YOUR_DEPLOYED_URL>//docs`
 - **Health Check**: `GET https://<YOUR_DEPLOYED_URL>/`
 
 ---
