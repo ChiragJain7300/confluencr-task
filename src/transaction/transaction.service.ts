@@ -31,17 +31,18 @@ export class TransactionService {
 
         if (transactionExists) {
             return {
-                status: 202,
                 message: transactionExists.status === 'PROCESSED'
                     ? 'Transaction has already been processed'
-                    : 'Transaction is already being processed',
+                    : 'Webhook accepted for processing',
                 transaction_id: transactionExists.transaction_id,
+                status: transactionExists.status,
             };
         }
 
         try {
             const transaction = this.transactionRepository.create({
                 ...createTransactionDto,
+                status: 'PROCESSING',
                 processed_at: null,
             });
             await this.transactionRepository.save(transaction);
@@ -53,16 +54,16 @@ export class TransactionService {
             });
 
             return {
-                status: 202,
-                message: 'The transaction is being processed',
+                message: 'Webhook accepted for processing',
                 transaction_id: transaction.transaction_id,
+                status: 'PROCESSING',
             };
         } catch (error) {
             if (error.code === '23505') {
                 return {
-                    status: 202,
-                    message: 'Transaction is already being processed',
+                    message: 'Webhook accepted for processing',
                     transaction_id: createTransactionDto.transaction_id,
+                    status: 'PROCESSING',
                 };
             }
             throw error;

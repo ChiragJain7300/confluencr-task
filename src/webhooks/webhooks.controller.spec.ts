@@ -15,8 +15,9 @@ describe('WebhooksController', () => {
           provide: TransactionService,
           useValue: {
             create: jest.fn().mockResolvedValue({
-              status: 202,
-              message: 'The transaction is being processed',
+              message: 'Webhook accepted for processing',
+              transaction_id: 'txn_abc123def456',
+              status: 'PROCESSING',
             }),
           },
         },

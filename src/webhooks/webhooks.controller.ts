@@ -16,9 +16,9 @@ export class WebhooksController {
     description: 'Webhook accepted for processing',
     schema: {
       example: {
-        status: 202,
-        message: 'The transaction is being processed',
+        message: 'Webhook accepted for processing',
         transaction_id: 'txn_abc123def456',
+        status: 'PROCESSING',
       },
     },
   })
